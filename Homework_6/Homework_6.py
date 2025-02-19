@@ -8,7 +8,12 @@ def test_dark_theme_by_time():
     current_time = time(hour=23)
     # TODO переключите темную тему в зависимости от времени суток (с 22 до 6 часов утра - ночь)
 
-    is_dark_theme = None
+    # Определяем границы ночного времени
+    start_dark_theme = time(hour=22)  # 22:00
+    end_dark_theme = time(hour=6)  # 06:00
+
+    is_dark_theme = 22 <= current_time.hour or current_time.hour < 6
+
     assert is_dark_theme is True
 
 
@@ -25,8 +30,13 @@ def test_dark_theme_by_time_and_user_choice():
     # TODO переключите темную тему в зависимости от времени суток,
     #  но учтите что темная тема может быть включена вручную
 
-    is_dark_theme = None
-    assert is_dark_theme is True
+    # Логика переключения темной темы
+    if dark_theme_enabled_by_user is not None:
+        is_dark_theme = dark_theme_enabled_by_user  # Приоритет выбора пользователя
+    else:
+        is_dark_theme = 22 <= current_time.hour or current_time.hour < 6  # Авто-переключение по времени
+
+    assert is_dark_theme is True  # Проверяем, что в 16:00 темная тема включена вручную
 
 
 def test_find_suitable_user():
@@ -42,11 +52,11 @@ def test_find_suitable_user():
     ]
 
     # TODO найдите пользователя с именем "Olga"
-    suitable_users = None
+    suitable_users = next(user for user in users if user["name"] == "Olga")
     assert suitable_users == {"name": "Olga", "age": 45}
 
     # TODO найдите всех пользователей младше 20 лет
-    suitable_users = None
+    suitable_users = [user for user in users if user["age"] < 20]
     assert suitable_users == [
         {"name": "Stanislav", "age": 15},
         {"name": "Maria", "age": 18},
@@ -63,6 +73,28 @@ def test_find_suitable_user():
 # >>> open_browser(browser_name="Chrome")
 # "Open Browser [Chrome]"
 
+def print_function_name_and_args(*args, **kwargs):
+    """
+    Функция для форматирования имени функции и её аргументов
+    """
+    # Получаем имя вызывающей функции через "магический" атрибут frame
+    import inspect
+    caller_frame = inspect.currentframe().f_back
+    func_name = caller_frame.f_code.co_name
+
+    # Преобразуем имя функции
+    # Заменяем подчёркивания на пробелы и делаем каждое слово с заглавной буквы
+    readable_name = func_name.replace('_', ' ').title()
+
+    # Собираем все аргументы в список
+    all_args = []
+    all_args.extend(str(arg) for arg in args)
+    all_args.extend(str(value) for value in kwargs.values())
+
+    # Формируем результирующую строку
+    result = f"{readable_name} [{', '.join(all_args)}]"
+
+    return result
 
 def test_readable_function():
     open_browser(browser_name="Chrome")
@@ -71,15 +103,18 @@ def test_readable_function():
 
 
 def open_browser(browser_name):
-    actual_result = None
+    actual_result = print_function_name_and_args(browser_name)
+    print(actual_result)
     assert actual_result == "Open Browser [Chrome]"
 
 
 def go_to_companyname_homepage(page_url):
-    actual_result = None
+    actual_result = print_function_name_and_args(page_url)
+    print(actual_result)
     assert actual_result == "Go To Companyname Homepage [https://companyname.com]"
 
 
 def find_registration_button_on_login_page(page_url, button_text):
-    actual_result = None
+    actual_result = print_function_name_and_args(page_url, button_text)
+    print(actual_result)
     assert actual_result == "Find Registration Button On Login Page [https://companyname.com/login, Register]"
