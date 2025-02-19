@@ -73,26 +73,13 @@ def test_find_suitable_user():
 # >>> open_browser(browser_name="Chrome")
 # "Open Browser [Chrome]"
 
-def print_function_name_and_args(*args, **kwargs):
-    """
-    Функция для форматирования имени функции и её аргументов
-    """
-    # Получаем имя вызывающей функции через "магический" атрибут frame
-    import inspect
-    caller_frame = inspect.currentframe().f_back
-    func_name = caller_frame.f_code.co_name
+def print_function_name_and_args(func_name, args):
 
-    # Преобразуем имя функции
     # Заменяем подчёркивания на пробелы и делаем каждое слово с заглавной буквы
     readable_name = func_name.replace('_', ' ').title()
 
-    # Собираем все аргументы в список
-    all_args = []
-    all_args.extend(str(arg) for arg in args)
-    all_args.extend(str(value) for value in kwargs.values())
-
     # Формируем результирующую строку
-    result = f"{readable_name} [{', '.join(all_args)}]"
+    result = f"{readable_name} [{', '.join(args)}]"
 
     return result
 
@@ -103,18 +90,21 @@ def test_readable_function():
 
 
 def open_browser(browser_name):
-    actual_result = print_function_name_and_args(browser_name)
+    funcName = open_browser.__name__
+    actual_result = print_function_name_and_args(funcName, [browser_name])
     print(actual_result)
     assert actual_result == "Open Browser [Chrome]"
 
 
 def go_to_companyname_homepage(page_url):
-    actual_result = print_function_name_and_args(page_url)
+    funcName = go_to_companyname_homepage.__name__
+    actual_result = print_function_name_and_args(funcName, [page_url])
     print(actual_result)
     assert actual_result == "Go To Companyname Homepage [https://companyname.com]"
 
 
 def find_registration_button_on_login_page(page_url, button_text):
-    actual_result = print_function_name_and_args(page_url, button_text)
+    funcName = find_registration_button_on_login_page.__name__
+    actual_result = print_function_name_and_args(funcName, [page_url, button_text])
     print(actual_result)
     assert actual_result == "Find Registration Button On Login Page [https://companyname.com/login, Register]"
